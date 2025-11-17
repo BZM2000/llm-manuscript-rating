@@ -197,13 +197,13 @@ Despite these caveats, the exercise shows that an LLM can be turned from a chatt
 
 ## Reproducibility and repository structure
 
-In the accompanying GitHub repository I plan to include:
+In the accompanying GitHub repository I include:
 
 - The script for batch processing manuscripts including preprocessing.
 - The exact prompt used for scoring.
-- Raw data for the specific scores.
+- Raw data (specific scores).
 
-The aim is that anyone working in a neighbouring field can adapt the notebook, swap in their own set of journals and calibration papers, and obtain a similar set of distributions tailored to their area.
+The aim is that anyone working in a neighbouring field can swap in their own set of journals and calibration papers, and obtain a similar set of distributions tailored to their area.
 
 ---
 
