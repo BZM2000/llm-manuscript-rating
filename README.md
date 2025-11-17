@@ -1,5 +1,10 @@
 # LLM‑calibrated journal benchmarking for manuscript submission
 
+---
+Jiaxuan Li
+Cavendish Laboratory, Department of Physics, University of Cambridge
+---
+
 ## Abstract
 
 Choosing a target journal is a surprisingly difficult part of scientific writing. Most researchers rely on informal advice from supervisors and colleagues, which can be biased or inconsistent, especially for interdisciplinary work that sits between chemistry, solid‑state physics and materials science. Here I explore whether a large language model (LLM) can be used as a calibrated “prestige sensor” for published articles and, by extension, for new manuscripts. I define six prestige levels spanning very top multidisciplinary titles to good narrow‑field journals, prompt the model to estimate the chance that a manuscript is sent out for external review at each level, and then compress these probabilities into a single score. I benchmark 20 recent articles per journal across 26 titles and five LLMs. Raw scores from GPT‑4.1 show an unrealistically large gap between the Nature‑portfolio journals and top field journals, which I trace to the model recognising journal style and metadata. When journal identifiers are stripped and only de‑identified text is scored (GPT‑remove), the distributions become more plausible: the Nature family still sits highest, but the best Nature Communications papers overlap the weaker Nature‑portfolio papers, and journals such as JACS, Advanced Materials, PRX and Sci. Adv. occupy a shared intermediate band. A repeatability test shows that non‑reasoning GPT‑4.1 is far more stable than reasoning models (standard deviation ≈0.9 vs 3.7–4.7 over 100 runs for a single paper). The resulting calibrated score distributions offer a quick, lightweight, and transparent aid to journal selection.
