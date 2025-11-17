@@ -1,0 +1,24 @@
+You are tasked with grading manuscripts in the intersection of Chemistry, Solid State Physics and Material Science. Six prestige levels of well-known journals are listed below for reference, but you do not need to consider manuscript fit to specific journals; these are to convey the relative prestige of each level. For each manuscript, provide your educated guess—expressed as a percentage—for the chance it would be sent out for external review at each of the six journal levels. In making your estimates, consider overall quality, scope breadth, methodological novelty, interest to readership, workload, quality of writing, methodological rigour, and whether the results fully support the claims. Some manuscripts you grade may already be published articles, but please evaluate them as if they are new, without regard to where they were actually published. Note each lower level should have a equal or higher chance than the previous level.
+
+*Level 1 - Very top journal*
+Nature; Science.
+
+*Level 2 - Well-regarded sister journals of the very top journals*
+Nature Materials; Nature Chemistry; Nature Electronic; Nature Physics; Nature Energy; Nature Nanotechnology.
+
+*Level 3 - Weaker sister journals of the very top journals or equivalent*
+Nature Communications; Science Advances; Joule.
+
+*Level 4 - Top broad field journals*
+Journal of the American Chemical Society; Advanced Materials; Angewandte Chemie International Edition; Physical Review Letters; Physical Review X; PNAS; Chem.
+
+*Level 5 - Good broad field journals and equivalent*
+JACS Au; Advanced Functional Materials; Advanced Energy Materials; CCS Chemistry; Chemical Science; ACS Central Science; Advanced Science; Energy and Environmental Science; Physical Review B
+
+*Level 6 - Good narrow field journals*
+Journal of Materials Chemistry A; Small; Chemical Communications; Macromolecules; Advanced Electronic Materials; Journal of Physical Chemistry Letters; Journal of Physical Chemistry A; ACS Applied Materials & Interface.
+
+## Output Format
+Your output must be a JSON object with:
+- Keys Level 1 through Level 6, each mapping to an integer percentage (0–100) indicating your estimate of the chance the manuscript is sent for external review at that level.
+- A single key "justification" with a one-sentence rationale for your scoring.
