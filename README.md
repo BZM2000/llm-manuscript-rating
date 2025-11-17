@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Choosing a target journal is a surprisingly difficult part of scientific writing. Most researchers rely on informal advice from supervisors and colleagues, which can be biased or inconsistent, especially for interdisciplinary work that sits between chemistry, solid‑state physics and materials science. Here I explore whether a large language model (LLM) can be used as a calibrated “prestige sensor” for published articles and, by extension, for new manuscripts. I define six prestige levels spanning very top multidisciplinary titles to good narrow‑field journals, prompt the model to estimate the chance that a manuscript is sent out for external review at each level, and then compress these probabilities into a single score. I benchmark ≈20 recent articles per journal across 26 titles and five LLMs. Raw scores from GPT‑4.1 show an unrealistically large gap between the Nature‑portfolio journals and top field journals, which I trace to the model recognising journal style and metadata. When journal identifiers are stripped and only de‑identified text is scored (GPT‑remove), the distributions become more plausible: the Nature family still sits highest, but the best Nature Communications papers overlap the weaker Nature‑portfolio papers, and journals such as JACS, Advanced Materials, PRX and Sci. Adv. occupy a shared intermediate band. A repeatability test shows that non‑reasoning GPT‑4.1 is far more stable than reasoning models (standard deviation ≈0.9 vs 3.7–4.7 over 100 runs for a single paper). The resulting calibrated score distributions offer a lightweight, transparent aid to journal selection rather than a predictor of acceptance.
+Choosing a target journal is a surprisingly difficult part of scientific writing. Most researchers rely on informal advice from supervisors and colleagues, which can be biased or inconsistent, especially for interdisciplinary work that sits between chemistry, solid‑state physics and materials science. Here I explore whether a large language model (LLM) can be used as a calibrated “prestige sensor” for published articles and, by extension, for new manuscripts. I define six prestige levels spanning very top multidisciplinary titles to good narrow‑field journals, prompt the model to estimate the chance that a manuscript is sent out for external review at each level, and then compress these probabilities into a single score. I benchmark 20 recent articles per journal across 26 titles and five LLMs. Raw scores from GPT‑4.1 show an unrealistically large gap between the Nature‑portfolio journals and top field journals, which I trace to the model recognising journal style and metadata. When journal identifiers are stripped and only de‑identified text is scored (GPT‑remove), the distributions become more plausible: the Nature family still sits highest, but the best Nature Communications papers overlap the weaker Nature‑portfolio papers, and journals such as JACS, Advanced Materials, PRX and Sci. Adv. occupy a shared intermediate band. A repeatability test shows that non‑reasoning GPT‑4.1 is far more stable than reasoning models (standard deviation ≈0.9 vs 3.7–4.7 over 100 runs for a single paper). The resulting calibrated score distributions offer a quick, lightweight, and transparent aid to journal selection.
 
 ---
 
@@ -12,7 +12,7 @@ Selecting a journal is one of the few strongly consequential decisions in the li
 
 Modern LLMs have ingested much of the published literature and have, implicitly, experienced a vast number of editorial decisions. They are poor oracles of acceptance probabilities, but they can be surprisingly good at relative judgements such as “this looks stronger than that”. The question explored here is whether an LLM, prompted carefully and calibrated using recent published articles, can provide a useful benchmark for where a new manuscript is likely to be at least review‑worthy.
 
-Rather than attempt to predict acceptance, I ask the model to estimate the probability that a manuscript would be sent out for external review at each of six journal‑prestige levels. These probabilities are then combined into a single score, which can be compared across journals. By collecting score distributions for a set of well‑known titles, I obtain a data‑driven map of perceived journal difficulty that can be referenced when choosing where to submit.
+Rather than attempt to predict acceptance, I ask the model to estimate the probability that a manuscript would be sent out for external review at each of six journal‑prestige levels. These probabilities are not what is used, they are instead combined into a single score, which can be compared across manuscripts and journals. By collecting score distributions for a set of well‑known titles, I obtain a data‑driven map of perceived journal difficulty that can be referenced when choosing where to submit.
 
 ---
 
@@ -29,9 +29,9 @@ I define six prestige levels by grouping commonly used journals in chemistry, ph
 | Level 1 | Very top multidisciplinary | *Nature*, *Science* |
 | Level 2 | High‑prestige sister titles | *Nature Materials*, *Nature Chemistry*, *Nature Physics*, *Nature Electronics*, *Nature Energy*, *Nature Nanotechnology* |
 | Level 3 | Mid‑prestige sisters and equivalents | *Nature Communications*, *Science Advances*, *Joule* |
-| Level 4 | Top broad‑field journals | *Journal of the American Chemical Society* (JACS), *Advanced Materials*, *Angewandte Chemie International Edition*, *Physical Review Letters*, *Physical Review X*, *PNAS*, *Chem* |
+| Level 4 | Top broad‑field journals | *Journal of the American Chemical Society*, *Advanced Materials*, *Angewandte Chemie International Edition*, *Physical Review Letters*, *Physical Review X*, *PNAS*, *Chem* |
 | Level 5 | Strong broad‑field journals and equivalents | *JACS Au*, *Advanced Functional Materials*, *Advanced Energy Materials*, *CCS Chemistry*, *Chemical Science*, *ACS Central Science*, *Advanced Science*, *Energy & Environmental Science*, *Physical Review B* |
-| Level 6 | Good narrow‑field journals | *Journal of Materials Chemistry A*, *Small*, *Chemical Communications*, *Macromolecules*, *Advanced Electronic Materials*, *Journal of Physical Chemistry Letters*, *J. Phys. Chem. A*, *ACS Applied Materials & Interfaces* |
+| Level 6 | Good narrow‑field journals | *Journal of Materials Chemistry A*, *Small*, *Chemical Communications*, *Macromolecules*, *Advanced Electronic Materials*, *Journal of Physical Chemistry Letters*, *Journal of Physical Chemistry A*, *ACS Applied Materials & Interfaces* |
 
 For each manuscript, the LLM is given only the scientific text (see below) together with this six‑level ladder. It is asked:
 
@@ -43,19 +43,19 @@ The model outputs six integers between 0 and 100 (“Level 1” to “Level 6”
 
 To obtain a single number per manuscript, I form a weighted average of the six level‑probabilities
 
-\[
+$$
 S = \frac{2p_1 + 2p_2 + p_3 + p_4 + p_5 + p_6}{8},
-\]
+$$
 
 where \(p_i\) is the predicted review probability at level \(i\). This slightly emphasises the top two levels while keeping contributions from the rest. Intuitively, a manuscript that looks borderline for Level 2 but safe for Level 4 will score higher than one that is only safe at Level 5–6.
 
-For each manuscript and model, I draw up to 20 independent samples. Only samples that satisfy the monotonicity constraint across levels are retained. The final score for that manuscript is taken as the interquartile mean (the mean after trimming away values outside the 25th–75th percentile), which reduces the influence of occasional erratic outputs.
+For each manuscript and model, I draw up to 20 scores. Only samples that satisfy the monotonicity constraint across levels are retained. The final score for that manuscript is taken as the interquartile mean (the mean after trimming away values outside the 25th–75th percentile), which reduces the influence of occasional erratic outputs and accounts for expected LLM variation.
 
 ### Manuscript set
 
-For each journal, I collect approximately twenty of the most recent research articles in areas overlapping chemistry, solid‑state physics and materials science, focusing on topics such as conductive frameworks, organic conductors, low‑dimensional materials and related electronic or energy applications. For journals that are not fully open access, I restrict to open‑access articles. Editorials, reviews and perspectives are excluded.
+For each journal, I collect 20 of the most recent research articles in concerned areas overlapping materials chemistry, solid‑state physics and materials science. Some notable areas that are excluded include: organic synthsis, energy-related applications/management, biology and biomaterials, purely theoretical articles, etc. For journals that are not fully open access, I restrict to open‑access articles. Editorials, reviews, short commmunications, and perspectives are excluded.
 
-This yields 26 journals spanning Levels 1–6, with between 20 and 24 articles per journal after filtering.
+This yields 26 journals spanning Levels 1–6, with 20 articles per journal.
 
 ### Models and de‑identification
 
@@ -64,7 +64,7 @@ I test both “reasoning” and “non‑reasoning” models from several provid
 A key question is whether the LLM is genuinely judging scientific quality or simply recognising journal style and metadata. I therefore run GPT‑4.1 in two modes:
 
 1. **GPT‑4.1 (raw):** manuscripts are provided with their original abstract and front‑matter, which often includes journal names, DOIs and characteristic phrasing.
-2. **GPT‑remove:** a preprocessing script removes explicit journal identifiers (names, abbreviations, DOIs, publisher names and URLs) and applies simple regular expressions to delete or neutralise formulaic phrases strongly associated with specific publishers. The scientific content of the abstract and main claims is left intact.
+2. **GPT‑remove:** a preprocessing script removes explicit journal identifiers (names, abbreviations, DOIs, publisher names and URLs) and applies simple regular expressions to delete or neutralise formulaic phrases strongly associated with specific publishers. The scientific content is left intact.
 
 Unless otherwise stated, results labelled GPT‑remove refer to GPT‑4.1 evaluated on these de‑identified texts.
 
@@ -86,7 +86,7 @@ When GPT‑4.1 is used directly on unmodified abstracts with journal information
 - Top field journals such as JACS, *Advanced Materials*, *Angewandte Chemie*, *PRX*, *PRL* and *Chem* all sit around 38–47.
 - Good broad‑ and narrow‑field journals (*Chemical Science*, *ACS Central Science*, *Advanced Functional Materials*, *PRB*, *JMCA*, *Macromolecules*) lie in the low 30s.
 
-The relative ordering broadly agrees with informal expectations (for example JACS scores higher than JACS Au, *Advanced Materials* higher than *Advanced Functional Materials*), but the magnitude of the gap between the Nature‑portfolio journals and field‑top titles appears unrealistically large. Nearly every recent *Nature Materials* paper is scored closer to *Nature* than to JACS or *Advanced Materials*, which is unlikely to reflect actual editorial difficulty.
+The relative ordering broadly agrees with informal expectations (for example JACS scores higher than JACS Au, *Advanced Materials* higher than *Advanced Functional Materials*), but the magnitude of the gap between the Nature‑portfolio journals and field‑top titles appears unrealistically large. For example, there is a huge gap between *Nature Materials* or *Nature Chemistry* and to JACS or *Advanced Materials*, which is unlikely to reflect actual editorial difficulty.
 
 ### De‑identification compresses the Nature gap and aligns Nature Communications with near‑misses
 
@@ -132,9 +132,9 @@ Second, *Nature Communications* and *Science Advances* now occupy a band whose u
 
 Third, top field‑journals such as JACS, *Advanced Materials*, ACIE, *PRX*, *PRL*, *Chem*, *Sci. Adv.* and PNAS form a broad plateau in the high 30s to mid‑40s. Journals like *Advanced Functional Materials*, *Chemical Science* and *ACS Central Science* sit just below but clearly above narrow‑field titles such as *Journal of Materials Chemistry A*, *PRB* and *ChemComm*.
 
-Figure 1 sketches these distributions as box plots, revealing a smooth ladder from *Nature* down to specialist journals with overlapping bands rather than sharp cliffs.
+Figure 1 sketches these distributions, revealing a smooth ladder from *Nature* down to specialist journals with overlapping bands rather than sharp cliffs.
 
-![Figure 1 | Schematic box‑plot of GPT‑remove scores by journal.](fig1_scores_by_journal.png)
+
 
 ### Different models agree on ordering but differ in scale
 
@@ -179,17 +179,17 @@ In other words, reasoning models are three to five times more variable run‑to�
 
 The results above suggest that LLMs can provide a useful, calibrated signal about the relative “journal strength” of manuscripts, provided that two conditions are met. First, the model must not be allowed to condition explicitly on journal identifiers or heavily stylised boilerplate text. Second, scores must be interpreted in a relative, distributional sense, rather than as literal probabilities of acceptance.
 
-With those caveats, the GPT‑remove distributions in Table 2 match common experience reasonably well. *Nature* and its siblings are harder than JACS, *Advanced Materials* or *PRX*, which in turn sit above journals such as *Advanced Functional Materials* and *Chemical Science*, which themselves are usually harder than *JMCA* or *ChemComm*. The interesting part is the quantitative overlap: upper‑quartile *Nature Communications* articles look very similar, to the model, to lower‑quartile *Nature Chemistry* or *Nature Physics* articles. This matches the lived experience that many papers move between these venues during peer review.
+With those caveats, the GPT‑remove distributions in Table 2 and Figure 1 match common experience reasonably well. *Nature* and its siblings are harder than JACS, *Advanced Materials* or *PRL*, which in turn sit above journals such as *Advanced Functional Materials* and *Chemical Science*, which themselves are usually harder than *JMCA* or *ChemComm*. The interesting part is the quantitative overlap: upper‑quartile *Nature Communications* articles look very similar, to the model, to lower‑quartile *Nature Chemistry* or *Nature Physics* articles. This matches the lived experience that many papers move between these venues during peer review. For example, a significant proportion of the best papers at *Nature Communications* are likely to be near-miss rejections from *Nature Materials*.
 
 How might this be used in practice? One simple procedure is:
 
 1. Score a new manuscript with GPT‑remove using the same prompt and scoring pipeline.
 2. Place its composite score on the calibrated distributions for the candidate journals.
-3. Prefer journals where the manuscript sits within, or slightly above, the middle 50 % of recent published work. Treat journals where it sits well below Q1 as aspirational.
+3. Prefer journals where the manuscript sits above the lower quartile recent published work. Treat journals where it sits well below as aspirational.
 
-Such a tool is not a replacement for human judgement, but it can act as a sanity check. If a manuscript believed to be “clearly Nature‑level” scores squarely in the JACS/*Advanced Materials* band, that might prompt constructive revision of the narrative or a more modest first target. Conversely, if a manuscript believed to be “just JMCA‑level” sits comfortably in the JACS band, it may deserve a more ambitious submission.
+Such a tool is not a replacement for human judgement, but it can act as a sanity check. For example, if a manuscript believed to be “clearly Nature‑level” scores squarely in the JACS/*Advanced Materials* band, that might prompt constructive revision of the narrative or a more modest first target.
 
-There are important limitations. The model evaluates only what is visible in the abstract and front‑matter; it cannot see experimental detail, raw data quality or subtle methodological pitfalls. It is also inevitably affected by training‑set leakage: some of the calibration articles will have been seen during training, and the model may have partially memorised their rhetorical structure. De‑identification mitigates but does not completely resolve this. Additionally, any such calibration is field‑specific: the difficulty of publishing in JACS or PRL is not the same in all subfields, and the present dataset focuses on the intersection of chemistry, solid‑state physics and materials science.
+There are important limitations. The model evaluates only what is visible in the main text; it cannot see any supplementary information. It is also inevitably affected by training‑set leakage: there are certain writing style and structuring to nature-portfolio journals that may well be spotted and quietly affect the model's judgement. De‑identification mitigates but does not completely resolve this. Additionally, any such calibration is field‑specific: the difficulty of publishing in JACS or PRL is not the same in all subfields, and the present dataset focuses on the broad intersection of chemistry, solid‑state physics and materials science. However, the key takeaway is that **if your manuscript fits the scope and priorities of a journal and is above its score thresholds, there is a realistic probability of it being set for review if submitted**.
 
 Despite these caveats, the exercise shows that an LLM can be turned from a chatty assistant into a reasonably consistent, quantifiable surrogate for “how hard does this look?”. It also reveals where stylistic priors matter: without de‑identification, the model reacts strongly to journal house style and elevates Nature‑portfolio papers beyond what their content alone would justify.
 
@@ -199,11 +199,9 @@ Despite these caveats, the exercise shows that an LLM can be turned from a chatt
 
 In the accompanying GitHub repository I plan to include:
 
-- The list of DOIs and journal assignments for the calibration articles.
-- The preprocessing script that strips journal identifiers and lightly normalises style.
-- The exact prompts used for scoring and the code that enforces monotonicity across levels.
-- The scoring and aggregation pipeline (sampling, interquartile mean, composite score calculation).
-- Scripts to regenerate figures analogous to Figure 1 and tables such as Table 2.
+- The script for batch processing manuscripts including preprocessing.
+- The exact prompt used for scoring.
+- Raw data for the specific scores.
 
 The aim is that anyone working in a neighbouring field can adapt the notebook, swap in their own set of journals and calibration papers, and obtain a similar set of distributions tailored to their area.
 
@@ -213,5 +211,4 @@ The aim is that anyone working in a neighbouring field can adapt the notebook, s
 
 This small experiment sits somewhere between bibliometrics and model evaluation. It does not claim that LLMs can or should replace editorial decisions; rather, it shows that they can act as noisy but informative sensors of the kind of patterns that editors and referees already internalise. In a research landscape where multidisciplinary work is common and where “which journal?” remains a routine source of anxiety, even a crude, transparent calibration tool can be helpful.
 
-Future refinements might include topic‑conditioned calibration (separate distributions for, say, MOF transport vs perovskite photovoltaics), explicit debiasing for overly flowery writing, and ensembles of models to give uncertainty bands. For now, GPT‑4.1 with journal‑blind inputs already provides a surprisingly coherent and stable map of the current journal ladder in chemistry, solid‑state physics and materials science, and that is enough to make it a useful part of my own manuscript planning.
-
+Future refinements might include topic‑conditioned calibration (separate distributions for, say, MOF transport vs perovskite photovoltaics), explicit debiasing for overly flowery writing, and ensembles of models to give uncertainty bands. For now, GPT‑4.1 with journal‑blind inputs already provides a sufficiently coherent and stable map of the current journal ladder in chemistry, solid‑state physics and materials science, and that is enough to make it a useful part of my own manuscript planning.
