@@ -1,9 +1,7 @@
 # LLM‑calibrated journal benchmarking for manuscript submission
 
----
 Jiaxuan Li
 Cavendish Laboratory, Department of Physics, University of Cambridge
----
 
 ## Abstract
 
