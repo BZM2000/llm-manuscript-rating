@@ -134,7 +134,7 @@ Third, top field‑journals such as JACS, *Advanced Materials*, ACIE, *PRX*, *PR
 
 Figure 1 sketches these distributions, revealing a smooth ladder from *Nature* down to specialist journals with overlapping bands rather than sharp cliffs.
 
-
+![Figure 1. Interquartile location of rated journals using GPT-4.1 with de-identification.](fig1.png)
 
 ### Different models agree on ordering but differ in scale
 
